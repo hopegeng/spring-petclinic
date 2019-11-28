@@ -18,7 +18,17 @@ pipeline {
         stage( "Docker Build") {
             agent any
             steps {
-                sh 'docker build -t hopegeng/sprint-petclinic:latest .'
+                sh 'docker build -t hopegeng/spring-petclinic:latest .'
+            }
+        }
+
+        stage( "Docker push" ) {
+            agent any
+            steps {
+                withCredentials( [usernamePassword(credentialsId: "dockerhub_ID", passwordVariable: 'dockerhubPassword', usernameVariable: "dockerHubUser") ] ) {
+                    sh "docker login -u ${env.dockerhubPassword} -p ${env.dockerHubUser}"
+                    sh "docker push hopegeng/spring-petclinic:latest"
+                }
             }
         }
     }
